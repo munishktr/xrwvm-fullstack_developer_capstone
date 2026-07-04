@@ -4,23 +4,17 @@ import "../assets/bootstrap.min.css";
 
 const Header = () => {
     const logout = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     let logout_url = window.location.origin+"/djangoapp/logout";
-    const res = await fetch(logout_url, {
-      method: "GET",
-    });
-  
-    const json = await res.json();
-    if (json) {
-      let username = sessionStorage.getItem('username');
-      sessionStorage.removeItem('username');
-      window.location.href = window.location.origin;
-      window.location.reload();
-      alert("Logging out "+username+"...")
+    try {
+      await fetch(logout_url, { method: "GET", cache: "no-store" });
+    } catch (err) {
+      // Ignore network errors: we still log the user out on the client below
     }
-    else {
-      alert("The user could not be logged out.")
-    }
+    let username = sessionStorage.getItem('username');
+    sessionStorage.removeItem('username');
+    alert("Logging out "+username+"...");
+    window.location.href = window.location.origin;
   };
     
 //The default home page items are the login details panel

@@ -7,7 +7,23 @@
 <script>
 
 const logout = async (e) => {
-//Include the code for logout here.
+  // Stop the <a href="/"> from navigating away and aborting the fetch below
+  if (e) e.preventDefault();
+
+  // Build logout URL and make a non-cached GET request to the logout endpoint
+  let logout_url = window.location.origin+"/djangoapp/logout";
+  try {
+    await fetch(logout_url, { method: "GET", cache: "no-store" });
+  } catch (err) {
+    // Ignore network errors: we still log the user out on the client below
+  }
+
+  // Clear session storage, notify the user, then send them to the home page.
+  // The alert MUST run before navigation, otherwise the browser suppresses it.
+  let username = sessionStorage.getItem('username');
+  sessionStorage.removeItem('username');
+  alert("Logging out "+username+"...");
+  window.location.href = window.location.origin;
 };
 
 let checkSession = ()=>{
@@ -16,7 +32,7 @@ let checkSession = ()=>{
   if (curr_user && curr_user !== "") {
     document.getElementById("loginlogout").innerHTML = 
     '<span class="homepage_links">' + curr_user +'</span>' +
-    '<a class="homepage_links" onclick="logout()" href="/">Logout</a>'
+    '<a class="homepage_links" onclick="logout(event)" href="/">Logout</a>'
   } else {
     document.getElementById("loginlogout").innerHTML = 
     '<a class="homepage_links" href="/login">Login</a>'+
